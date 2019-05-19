@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Simple Connect 3</string>
-    <string name="text_view_title">My Great App!</string>
+    <string name="launcher_name">SC3</string>
 </resources>

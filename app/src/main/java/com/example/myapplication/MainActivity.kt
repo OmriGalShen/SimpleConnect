@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
      * Player clicked on game grid
      * This is the main game function
      */
-    private fun dropPoker(view: View) {
+    fun dropPoker(view: View) {
         val image: ImageView = findViewById(view.id)
         val pokerNum = imageToPokerNum(image)
         val player = players[activePlayer] //current player
@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Player clicked on reset button
      */
-    private fun resetClicked(view: View) {
+    fun resetClicked(view: View) {
         initGame()
     }
 
