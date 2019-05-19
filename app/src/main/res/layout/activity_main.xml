@@ -18,16 +18,16 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
-
                 android:layout_width="90dp"
                 android:layout_height="90dp" android:id="@+id/poker1"
                 app:layout_row="0"
                 app:layout_column="0"
-
                 android:layout_marginLeft="20dp" android:layout_marginTop="20dp" android:layout_marginRight="20dp"
-                android:layout_marginBottom="20dp" android:onClick="dropPoker" android:tag="1"/>
-        <ImageView
+                android:layout_marginBottom="20dp"
 
+                android:onClick="dropPoker" android:tag="1" android:scaleType="fitCenter"
+        />
+        <ImageView
                 android:layout_width="90dp"
                 android:layout_height="90dp" android:id="@+id/poker2"
                 app:layout_row="0"
@@ -35,9 +35,9 @@
                 android:layout_marginLeft="10dp" android:layout_marginTop="20dp" android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"
 
-                android:onClick="dropPoker" android:tag="2"/>
+                android:onClick="dropPoker" android:tag="2" android:scaleType="fitCenter"
+        />
         <ImageView
-
                 android:layout_width="90dp"
                 android:layout_height="90dp" android:id="@+id/poker3"
                 app:layout_row="0"
@@ -45,7 +45,8 @@
                 android:layout_marginLeft="10dp" android:layout_marginTop="20dp" android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"
 
-                android:onClick="dropPoker" android:tag="3"/>
+                android:onClick="dropPoker" android:tag="3" android:scaleType="fitCenter"
+        />
         <ImageView
 
                 android:layout_width="90dp"
@@ -55,7 +56,7 @@
                 android:layout_marginLeft="20dp" android:layout_marginTop="20dp" android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"
 
-                android:onClick="dropPoker" android:tag="4"/>
+                android:onClick="dropPoker" android:tag="4" android:scaleType="fitCenter"/>
         <ImageView
 
                 android:layout_width="90dp"
@@ -65,7 +66,7 @@
                 android:layout_marginLeft="10dp" android:layout_marginTop="20dp" android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"
 
-                android:onClick="dropPoker" android:tag="5"/>
+                android:onClick="dropPoker" android:tag="5" android:scaleType="fitCenter"/>
         <ImageView
 
                 android:layout_width="90dp"
@@ -75,7 +76,7 @@
                 android:layout_marginLeft="10dp" android:layout_marginTop="20dp" android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"
 
-                android:onClick="dropPoker" android:tag="6"/>
+                android:onClick="dropPoker" android:tag="6" android:scaleType="fitCenter"/>
         <ImageView
                 android:layout_width="90dp"
                 android:layout_height="90dp" android:id="@+id/poker7"
@@ -84,7 +85,7 @@
                 android:layout_marginLeft="20dp" android:layout_marginTop="20dp" android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"
 
-                android:onClick="dropPoker" android:tag="7"/>
+                android:onClick="dropPoker" android:tag="7" android:scaleType="fitCenter"/>
         <ImageView
                 android:layout_width="90dp"
                 android:layout_height="90dp" android:id="@+id/poker8"
@@ -93,7 +94,7 @@
                 android:layout_marginLeft="10dp" android:layout_marginTop="20dp" android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"
 
-                android:onClick="dropPoker" android:tag="8"/>
+                android:onClick="dropPoker" android:tag="8" android:scaleType="fitCenter"/>
         <ImageView
                 android:layout_width="90dp"
                 android:layout_height="90dp" android:id="@+id/poker9"
@@ -102,7 +103,7 @@
                 android:layout_marginLeft="10dp" android:layout_marginTop="20dp" android:layout_marginRight="20dp"
                 android:layout_marginBottom="20dp"
 
-                android:onClick="dropPoker" android:tag="9"/>
+                android:onClick="dropPoker" android:tag="9" android:scaleType="fitCenter"/>
     </android.support.v7.widget.GridLayout>
     <TextView
             android:layout_width="wrap_content"

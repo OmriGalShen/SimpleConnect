@@ -6,8 +6,14 @@ class Board(rows:Int, cols:Int) {
 
     private fun pokerToPlayer(pokerNum: Int):IntArray{
         val row = (pokerNum-1)/board_arr.size
-        val col= pokerNum%board_arr[0].size
+        val col= (pokerNum-1)%board_arr[0].size
         return intArrayOf(row,col)
+    }
+    fun isFull():Boolean{
+        for (i in 0..board_arr.size-1)
+            for (j in 0..board_arr[0].size-1)
+                if(board_arr[i][j]==null)return false
+        return true
     }
     fun isFree(pokerNum: Int):Boolean{
         val position = pokerToPlayer(pokerNum)
@@ -40,6 +46,23 @@ class Board(rows:Int, cols:Int) {
             if(count==board_arr.size)return true
             count=0
         }
+        //check left to right diagonal
+        count=0
+        for (i in 0..board_arr.size-1){
+            if(board_arr[i][i]!=null&&
+                board_arr[i][i]!!.equals(player))
+                count++
+        }
+        if(count==board_arr.size)return true
+        //check right to left diagonal
+        count=0
+        for (i in 0..board_arr.size-1){
+            if(board_arr[i][board_arr[0].size-1-i]!=null&&
+                board_arr[i][board_arr[0].size-1-i]!!.equals(player))
+                count++
+        }
+        if(count==board_arr.size)return true
+        //no win conditions found
         return false
     }
 
