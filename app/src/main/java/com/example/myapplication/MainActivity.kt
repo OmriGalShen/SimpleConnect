@@ -9,24 +9,25 @@ import android.widget.*
 import android.media.MediaPlayer
 
 class MainActivity : AppCompatActivity() {
-    // 0 = red , 1= yellow
-    var activePlayer:Int = 0
-    var turnCount:Int = 1
-    val board = Array(3, {IntArray(3)})
-    var gameOn:Boolean = true
-    var mplayer:MediaPlayer= MediaPlayer()
+    //init variables
+    var redPlayer: Player = Player("Red", Color.parseColor("#FF4136"), R.drawable.red)
+    var yellowPlayer: Player = Player("Yellow", Color.parseColor("#FFDC00"), R.drawable.yellow)
+    var players = arrayOf(redPlayer, yellowPlayer)
+    var activePlayer: Int = 0 // index of active player in player array
+    var turnCount: Int = 1
+    var gameBoard = Board(3, 3)
+    var gameOn: Boolean = true
+    var mplayer: MediaPlayer = MediaPlayer()
+    var originalTextColor:Int = 0
     //
 
-    private fun initGame(){
-        gameOn=true
-        displayMessage("Red Turn")
-        turnCount=1
-        activePlayer=0
-        for(i in 0..2){
-            for(j in 0..2){
-                board[i][j]=-1
-            }
-        }
+    private fun initGame() {
+        gameOn = true
+        turnCount = 1
+        activePlayer = 0
+        displayMessage(players[activePlayer].turnMessage(),originalTextColor)
+        gameBoard = Board(3, 3)
+        //images are empty
         findViewById<ImageView>(R.id.poker1).setImageResource(0)
         findViewById<ImageView>(R.id.poker2).setImageResource(0)
         findViewById<ImageView>(R.id.poker3).setImageResource(0)
@@ -38,148 +39,91 @@ class MainActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.poker9).setImageResource(0)
     }
 
-    private fun imageToPokerNum(image:ImageView): Int{
-        val defaultValue : Int = -1
-        return image.tag.toString().toIntOrNull()?:defaultValue
+    fun passPlayerTurn() {
+        activePlayer++
+        if (activePlayer >= players.size) activePlayer = 0
     }
 
-    private fun checkBoardSpace(pokerNum:Int):Boolean{
-        when(pokerNum){
-            1->return board[0][0]==-1
-            2->return board[0][1]==-1
-            3->return board[0][2]==-1
-            4->return board[1][0]==-1
-            5->return board[1][1]==-1
-            6->return board[1][2]==-1
-            7->return board[2][0]==-1
-            8->return board[2][1]==-1
-            9->return board[2][2]==-1
-        }
-        return false
+    private fun imageToPokerNum(image: ImageView): Int {
+        val defaultValue: Int = -1
+        return image.tag.toString().toIntOrNull() ?: defaultValue
     }
 
-    private fun insertToBoard(pokerNum:Int,player:Int){
-        when(pokerNum){
-            1->board[0][0] = player
-            2->board[0][1] = player
-            3->board[0][2] = player
-            4->board[1][0] = player
-            5->board[1][1] = player
-            6->board[1][2] = player
-            7->board[2][0] = player
-            8->board[2][1] = player
-            9->board[2][2] = player
-        }
-    }
-
-    private fun checkVictory(player:Int):Boolean
-    {
-        //check all rows and columns
-        for(i in 0..2){
-            if(board[i][0]==player && board[i][1]==player && board[i][2]==player)
-                return true
-            if(board[0][i]==player && board[1][i]==player && board[2][i]==player)
-                return true
-        }
-        //check left to right diagonal
-        if(board[0][0]==player && board[1][1]==player && board[2][2]==player)
-            return true
-        //check right to left diagonal
-        if(board[0][2]==player && board[1][1]==player && board[2][0]==player)
-            return true
-        return false
-    }
-
-    fun dropPoker(view: View){
-        val image:ImageView = findViewById(view.id)
+    fun dropPoker(view: View) {
+        val image: ImageView = findViewById(view.id)
         val pokerNum = imageToPokerNum(image)
-        if(gameOn) {
-            if (turnCount <= 9 && checkBoardSpace(pokerNum)) {
+        val player = players[activePlayer] //current player
+        if (gameOn) {
+            if (turnCount <= 9 && gameBoard.isFree(pokerNum)) {
                 //drop animation of poker chip
                 image.translationY = -1000f
                 image.animate().translationY(0f).duration = 800
                 //
-                if (activePlayer == 0)//red player turn
+                image.setImageResource(player.image) //change to player image
+                gameBoard.insert(pokerNum, player) // add player to game board
+                if (gameBoard.checkVictory(player))  //player won
                 {
-                    Log.i("Info", "player status: red turn")
-                    image.setImageResource(R.drawable.red)//insert yellow chip to board
-                    insertToBoard(pokerNum, activePlayer) // insert play to board array
-                    if (checkVictory(activePlayer)) {// red player won
-                        victoryState(activePlayer)
-                        return
-                    } else {
-                        activePlayer = 1 // next play active player is set to yellow
-                        displayMessage("Yellow Turn")
-                    }
-                } else // yellow player turn
-                {
-                    Log.i("Info", "player status: yellow turn")
-                    image.setImageResource(R.drawable.yellow)//insert yellow chip to board
-                    insertToBoard(pokerNum, activePlayer)// insert play to board array
-                    if (checkVictory(activePlayer)) { // yellow player won
-                        victoryState(activePlayer)
-                        return
-                    } else {
-                        activePlayer = 0 // next play active player is set to red
-                        displayMessage("Red Turn")
-                    }
+                    victoryState(player)
+                    return
                 }
-                if(isSound()) {
-                    mplayer = MediaPlayer.create(this,R.raw.ting_sound)
-                    mplayer.start()
-                }
-                turnCount++
-                if (turnCount > 9)
-                    drawState()
+                passPlayerTurn()
+                displayMessage(players[activePlayer].turnMessage())
             }
-            Log.i("Info", "turn status:" + turnCount)
+            if (isSound()) {
+                mplayer = MediaPlayer.create(this, R.raw.ting_sound)
+                mplayer.start()
+            }
+            turnCount++
+            if (turnCount > 9)
+                drawState()
         }
+        Log.i("Info", "turn status:" + turnCount)
     }
 
-    private fun drawState(){
+    private fun drawState() {
         val message = "Draw!"
 //        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
         displayMessage(message)
-        gameOn=false
-        if(isSound()) {
-            mplayer = MediaPlayer.create(this,R.raw.draw_sound)
+        gameOn = false
+        if (isSound()) {
+            mplayer = MediaPlayer.create(this, R.raw.draw_sound)
             mplayer.start()
         }
     }
 
-    private fun victoryState(player:Int){
-        var playerStr:String = "Red"
-        if(player!=0){
-            playerStr="Yellow"
-        }
-        val message = playerStr+" Won!"
+    private fun victoryState(player: Player) {
 //        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
-        displayMessage(message)
-        gameOn=false
-        if(isSound()) {
-            mplayer = MediaPlayer.create(this,R.raw.win_sound)
+        displayMessage(player.winMessage(),player.color)
+        gameOn = false
+        if (isSound()) {
+            mplayer = MediaPlayer.create(this, R.raw.win_sound)
             mplayer.start()
         }
     }
 
-    fun resetClicked(view:View){
+    fun resetClicked(view: View) {
         initGame()
     }
 
-    private fun displayMessage(message:String){
-        findViewById<TextView>(R.id.messageView).text = message
+    private fun displayMessage(message: String) {
+        val view:TextView = findViewById<TextView>(R.id.messageView)
+        view.text= message
     }
-//    private fun displayMessage(message:String, color: String){
-//        findViewById<TextView>(R.id.messageView).text = message
-//        findViewById<TextView>(R.id.messageView).setTextColor(Color.parseColor(color))
-//    }
-    private fun isSound():Boolean{
+
+    private fun displayMessage(message: String, color: Int) {
+        val view:TextView = findViewById<TextView>(R.id.messageView)
+        view.text=message
+        view.setTextColor(color)
+    }
+
+    private fun isSound(): Boolean {
         return findViewById<ToggleButton>(R.id.soundToggle).isChecked
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        originalTextColor = findViewById<TextView>(R.id.messageView).currentTextColor
         initGame()
     }
 }
