@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         gameOn = true
         activePlayer = 0
         displayMessage(players[activePlayer].turnMessage(),originalTextColor)
-        gameBoard = Board(3, 3)
+        gameBoard = Board(gridHeight, gridWidth) //initialize game board
         //images are empty
         findViewById<ImageView>(R.id.poker1).setImageResource(0)
         findViewById<ImageView>(R.id.poker2).setImageResource(0)
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Change current player to next player in players array
      */
-    fun passPlayerTurn() {
+    private fun passPlayerTurn() {
         activePlayer++
         if (activePlayer >= players.size) activePlayer = 0
     }
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
      * Player clicked on game grid
      * This is the main game function
      */
-    fun dropPoker(view: View) {
+    private fun dropPoker(view: View) {
         val image: ImageView = findViewById(view.id)
         val pokerNum = imageToPokerNum(image)
         val player = players[activePlayer] //current player
@@ -83,8 +83,10 @@ class MainActivity : AppCompatActivity() {
                 passPlayerTurn()
                 displayMessage(players[activePlayer].turnMessage())
             }
-            if(gameBoard.isFull())// Game is tie!
+            if(gameBoard.isFull()) {// Game is tie!
                 drawState()
+                return
+            }
             if (isSound()) //makes turn sound
             {
                 mplayer = MediaPlayer.create(this, R.raw.ting_sound)
@@ -99,7 +101,7 @@ class MainActivity : AppCompatActivity() {
     private fun drawState() {
         val message = "Draw!"
 //        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
-        displayMessage(message)
+        displayMessage(message,Color.BLACK)
         gameOn = false
         if (isSound()) {
             mplayer = MediaPlayer.create(this, R.raw.draw_sound)
@@ -123,7 +125,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Player clicked on reset button
      */
-    fun resetClicked(view: View) {
+    private fun resetClicked(view: View) {
         initGame()
     }
 
