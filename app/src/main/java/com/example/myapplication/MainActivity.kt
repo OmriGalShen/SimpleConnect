@@ -3,22 +3,20 @@ package com.example.myapplication
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
 import android.media.MediaPlayer
 
 class MainActivity : AppCompatActivity() {
     //init players
-    var redPlayer: Player = Player("Red", Color.parseColor("#FF4136"), R.drawable.red)
-    var yellowPlayer: Player = Player("Yellow", Color.parseColor("#FFDC00"), R.drawable.yellow)
-    var players = arrayOf(redPlayer, yellowPlayer) // array containing all players
-    // initialize variables
+    private var redPlayer: Player = Player("Red", Color.parseColor("#FF4136"), R.drawable.red)
+    private var yellowPlayer: Player = Player("Yellow", Color.parseColor("#FFDC00"), R.drawable.yellow)
+//    private var bluePlayer: Player = Player("Blue", Color.parseColor("#0074D9"), R.drawable.cat1)
+    private var players = arrayOf(redPlayer, yellowPlayer) // array containing all players
+    // initialize variable
     var activePlayer: Int = 0 // index of active player in player array
-    private val gridHeight = 3
-    private val gridWidth = 3
-    var gameBoard = Board(gridHeight, gridWidth) //initialize game board
-    var gameOn: Boolean = true
+    var gameBoard:Board? = null //initialize game board
+    var isGameOn: Boolean = true
     var mplayer: MediaPlayer = MediaPlayer() // used to play sounds
     var originalTextColor:Int = 0 //save original color of game message in order to return to it after color change
     //
@@ -26,20 +24,17 @@ class MainActivity : AppCompatActivity() {
      * Initialize all game variables and make images
      */
     private fun initGame() {
-        gameOn = true
+        isGameOn = true
         activePlayer = 0
         displayMessage(players[activePlayer].turnMessage(),originalTextColor)
-        gameBoard = Board(gridHeight, gridWidth) //initialize game board
+        val grid:android.support.v7.widget.GridLayout=findViewById(R.id.gameGrid)
         //images are empty
-        findViewById<ImageView>(R.id.poker1).setImageResource(0)
-        findViewById<ImageView>(R.id.poker2).setImageResource(0)
-        findViewById<ImageView>(R.id.poker3).setImageResource(0)
-        findViewById<ImageView>(R.id.poker4).setImageResource(0)
-        findViewById<ImageView>(R.id.poker5).setImageResource(0)
-        findViewById<ImageView>(R.id.poker6).setImageResource(0)
-        findViewById<ImageView>(R.id.poker7).setImageResource(0)
-        findViewById<ImageView>(R.id.poker8).setImageResource(0)
-        findViewById<ImageView>(R.id.poker9).setImageResource(0)
+        for(childInx:Int in 0..grid.childCount-1){
+            val childView = grid.getChildAt(childInx) as ImageView
+            childView.setImageResource(0)
+        }
+        //initialize game board
+        gameBoard = Board(grid.rowCount, grid.columnCount)
     }
 
     /**
@@ -66,16 +61,16 @@ class MainActivity : AppCompatActivity() {
         val image: ImageView = findViewById(view.id)
         val pokerNum = imageToPokerNum(image)
         val player = players[activePlayer] //current player
-        if (gameOn) {
-            if (gameBoard.isFree(pokerNum))
+        if (isGameOn) {
+            if (gameBoard!!.isFree(pokerNum))
             {
                 //drop animation of poker chip
                 image.translationY = -1000f
                 image.animate().translationY(0f).duration = 800
                 //
                 image.setImageResource(player.image) //change to player image
-                gameBoard.insert(pokerNum, player) // add player to game board
-                if (gameBoard.checkVictory(player))  //player won
+                gameBoard!!.insert(pokerNum, player) // add player to game board
+                if (gameBoard!!.checkVictory(player))  //player won
                 {
                     victoryState(player)
                     return
@@ -83,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                 passPlayerTurn()
                 displayMessage(players[activePlayer].turnMessage())
             }
-            if(gameBoard.isFull()) {// Game is tie!
+            if(gameBoard!!.isFull()) {// Game is tie!
                 drawState()
                 return
             }
@@ -102,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         val message = "Draw!"
 //        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
         displayMessage(message,Color.BLACK)
-        gameOn = false
+        isGameOn = false
         if (isSound()) {
             mplayer = MediaPlayer.create(this, R.raw.draw_sound)
             mplayer.start()
@@ -115,7 +110,7 @@ class MainActivity : AppCompatActivity() {
     private fun victoryState(player: Player) {
 //        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
         displayMessage(player.winMessage(),player.color)
-        gameOn = false
+        isGameOn = false
         if (isSound()) {
             mplayer = MediaPlayer.create(this, R.raw.win_sound)
             mplayer.start()
